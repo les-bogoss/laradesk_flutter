@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../main.dart';
+import 'package:laradesk_flutter/models/preferences.dart';
 
 class TicketList extends StatelessWidget {
   const TicketList({Key? key}) : super(key: key);
@@ -13,11 +12,11 @@ class TicketList extends StatelessWidget {
           const Spacer(),
           ElevatedButton(
             child: const Text(
-              'salut',
+              'logout',
             ),
-            onPressed: () async {
-              await storage.deleteAll();
-              print(await storage.readAll());
+            onPressed: () {
+              Preferences.setLoggedIn(context, false);
+              Preferences.token = null;
             },
           ),
         ],

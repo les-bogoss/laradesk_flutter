@@ -1,9 +1,13 @@
 import 'dart:io';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:laradesk_flutter/routes.dart';
 
+import 'models/preferences.dart';
+
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await beforeLaunch();
+
   runApp(MyApp());
 }
 
@@ -12,33 +16,27 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-const storage = FlutterSecureStorage();
-bool isLogin = false;
-
 class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    checkLoginStatus();
-  }
-
-  checkLoginStatus() async {
-    if (await storage.read(key: 'api_token') != null) {
-      isLogin = true;
-      print("zoefkoze");
-    } else {
-      isLogin = false;
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.cyan,
+      ),
+      initialRoute: Preferences.getHomepage(),
       routes: appRoutes,
-      initialRoute: isLogin ? '/' : '/',
     );
   }
+}
+
+Future beforeLaunch() async {
+  await Preferences.init();
 }
 
 class MyHttpOverrides extends HttpOverrides {

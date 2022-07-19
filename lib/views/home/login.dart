@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:laradesk_flutter/controllers/verify_api.dart';
-import '../../main.dart';
+import 'package:laradesk_flutter/controllers/login_api.dart';
+import '../../models/preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -56,8 +56,15 @@ class _LoginPageState extends State<LoginPage> {
                           TextField(
                             controller: myEmail,
                             decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
                               labelText: 'Email',
-                              filled: true,
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     width: 3,
@@ -74,7 +81,15 @@ class _LoginPageState extends State<LoginPage> {
                             obscureText: true,
                             controller: myPassword,
                             decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
                               labelText: 'Password',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
                               filled: true,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -119,8 +134,8 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     );
                                   } else {
-                                    await storage.write(
-                                        key: 'api_token', value: apiToken);
+                                    Preferences.setLoggedIn(context, true);
+                                    Preferences.token = apiToken;
                                     Navigator.pushNamed((context), '/tickets');
                                   }
                                 } else {
