@@ -4,7 +4,7 @@ import 'package:laradesk_flutter/routes.dart';
 
 import 'models/preferences.dart';
 
-Future<void> main() async {
+main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await beforeLaunch();
 
@@ -27,7 +27,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.cyan,
+        primarySwatch: Colors.blue,
       ),
       initialRoute: Preferences.getHomepage(),
       routes: appRoutes,
