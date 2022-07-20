@@ -139,10 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     );
                                   } else {
-                                    Preferences.setLoggedIn(context, true);
-                                    Preferences.token = token;
-                                    Navigator.of(context)
-                                        .pushReplacementNamed('/tickets');
+                                    Preferences2.setLoggedIn(
+                                        context, true, token);
                                   }
                                 } else {
                                   showDialog(

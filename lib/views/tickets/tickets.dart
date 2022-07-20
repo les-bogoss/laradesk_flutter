@@ -6,8 +6,8 @@ class TicketList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    return Scaffold(
+      body: Column(
         children: [
           const Spacer(),
           ElevatedButton(
@@ -15,8 +15,7 @@ class TicketList extends StatelessWidget {
               'logout',
             ),
             onPressed: () {
-              Preferences.setLoggedIn(context, false);
-              Preferences.token = null;
+              Preferences2.setLoggedIn(context, false, null);
             },
           ),
         ],

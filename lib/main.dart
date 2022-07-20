@@ -29,14 +29,14 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Preferences.getHomepage(),
+      initialRoute: Preferences2.getHomepage(),
       routes: appRoutes,
     );
   }
 }
 
 Future beforeLaunch() async {
-  await Preferences.init();
+  await Preferences2.init();
 }
 
 class MyHttpOverrides extends HttpOverrides {

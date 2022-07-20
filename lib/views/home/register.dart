@@ -230,8 +230,9 @@ class _RegisterPageState extends State<RegisterPage> {
                                             );
                                           });
                                     } else {
-                                      Preferences.setLoggedIn(context, true);
-                                      Preferences.token = response[1];
+                                      Preferences2.setLoggedIn(
+                                          context, true, response[1]);
+
                                       Navigator.of(context)
                                           .pushNamedAndRemoveUntil('/tickets',
                                               (Route<dynamic> route) => false);
