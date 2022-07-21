@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:laradesk_flutter/controllers/verify_api.dart';
-import '../../main.dart';
+
+import '../../controllers/login_api.dart';
+import '../../models/preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -31,33 +32,44 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(
-                width: 300,
-                height: 400,
+                width: 350,
+                height: 420,
                 child: Card(
+                    elevation: 10,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(20.0),
                       child: Column(
                         children: [
-                          RichText(
-                            text: TextSpan(
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: 'LOGIN',
-                                    style: GoogleFonts.montserrat(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 50,
-                                        color: const Color(0xFF094074))),
-                              ],
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 30.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'SIGN IN',
+                                      style: GoogleFonts.montserrat(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 50,
+                                          color: const Color(0xFF094074))),
+                                ],
+                              ),
                             ),
                           ),
                           TextField(
                             controller: myEmail,
                             decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
                               labelText: 'Email',
-                              filled: true,
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
                                     width: 3,
@@ -68,13 +80,21 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(
-                            height: 50,
+                            height: 30,
                           ),
                           TextField(
                             obscureText: true,
                             controller: myPassword,
                             decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
                               labelText: 'Password',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
                               filled: true,
                               enabledBorder: OutlineInputBorder(
                                 borderSide: const BorderSide(
@@ -86,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(
-                            height: 50,
+                            height: 30,
                           ),
                           Container(
                             width: 120,
@@ -97,9 +117,9 @@ class _LoginPageState extends State<LoginPage> {
                                 if (myEmail.text.isNotEmpty &&
                                     myPassword.text.isNotEmpty) {
                                   //save token to shared preferences
-                                  var apiToken = await gettoken(
+                                  var token = await gettoken(
                                       myPassword.text, myEmail.text);
-                                  if (apiToken.isEmpty) {
+                                  if (token == "") {
                                     showDialog(
                                       context: context,
                                       builder: (BuildContext context) {
@@ -119,9 +139,8 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     );
                                   } else {
-                                    await storage.write(
-                                        key: 'api_token', value: apiToken);
-                                    Navigator.pushNamed((context), '/tickets');
+                                    Preferences.setLoggedIn(
+                                        context, true, token);
                                   }
                                 } else {
                                   showDialog(
@@ -170,15 +189,29 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                           ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.pushNamed(context, '/register');
-                            },
-                            child: Text("Don't have an account? Sign up",
-                                style: GoogleFonts.montserrat(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w800,
-                                    color: const Color(0xFF094074))),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("Don't have an account? "),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil('/register',
+                                            (Route<dynamic> route) => false);
+                                  },
+                                  child: Text(
+                                    "Sign up",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: const Color(0xFFFFDD4A)),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),

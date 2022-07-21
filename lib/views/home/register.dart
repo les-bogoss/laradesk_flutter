@@ -1,239 +1,343 @@
-import 'dart:async';
-import 'dart:io';
-import 'dart:math';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:laradesk_flutter/controllers/register_api.dart';
 
-class ItemsWidget extends StatefulWidget {
-  const ItemsWidget({Key? key}) : super(key: key);
+import '../../models/preferences.dart';
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
-  _ItemsWidgetState createState() => _ItemsWidgetState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-enum _Actions { deleteAll }
-
-enum _ItemActions { delete, edit, containsKey }
-
-class _ItemsWidgetState extends State<ItemsWidget> {
-  final _storage = const FlutterSecureStorage();
-  final _accountNameController =
-      TextEditingController(text: 'flutter_secure_storage_service');
-
-  List<_SecItem> _items = [];
-
-  @override
-  void initState() {
-    super.initState();
-
-    _accountNameController.addListener(() => _readAll());
-    _readAll();
-  }
-
-  Future<void> _readAll() async {
-    final all = await _storage.readAll(
-        iOptions: _getIOSOptions(), aOptions: _getAndroidOptions());
-    setState(() {
-      _items = all.entries
-          .map((entry) => _SecItem(entry.key, entry.value))
-          .toList(growable: false);
-    });
-  }
-
-  void _deleteAll() async {
-    await _storage.deleteAll(
-        iOptions: _getIOSOptions(), aOptions: _getAndroidOptions());
-    _readAll();
-  }
-
-  void _addNewItem() async {
-    final String key = _randomValue();
-    final String value = _randomValue();
-
-    await _storage.write(
-        key: key,
-        value: value,
-        iOptions: _getIOSOptions(),
-        aOptions: _getAndroidOptions());
-    _readAll();
-  }
-
-  IOSOptions _getIOSOptions() => IOSOptions(
-        accountName: _getAccountName(),
-      );
-
-  AndroidOptions _getAndroidOptions() => const AndroidOptions(
-        encryptedSharedPreferences: true,
-      );
-
-  String? _getAccountName() =>
-      _accountNameController.text.isEmpty ? null : _accountNameController.text;
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: const Text('Plugin example app'),
-          actions: <Widget>[
-            IconButton(
-                key: const Key('add_random'),
-                onPressed: _addNewItem,
-                icon: const Icon(Icons.add)),
-            PopupMenuButton<_Actions>(
-                key: const Key('popup_menu'),
-                onSelected: (action) {
-                  switch (action) {
-                    case _Actions.deleteAll:
-                      _deleteAll();
-                      break;
-                  }
-                },
-                itemBuilder: (BuildContext context) =>
-                    <PopupMenuEntry<_Actions>>[
-                      const PopupMenuItem(
-                        key: Key('delete_all'),
-                        value: _Actions.deleteAll,
-                        child: Text('Delete all'),
-                      ),
-                    ])
-          ],
-        ),
-        body: Column(
-          children: [
-            if (!kIsWeb && Platform.isIOS)
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextFormField(
-                  controller: _accountNameController,
-                  decoration:
-                      const InputDecoration(labelText: 'kSecAttrService'),
-                ),
-              ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _items.length,
-                itemBuilder: (BuildContext context, int index) => ListTile(
-                  trailing: PopupMenuButton(
-                      key: Key('popup_row_$index'),
-                      onSelected: (_ItemActions action) =>
-                          _performAction(action, _items[index], context),
-                      itemBuilder: (BuildContext context) =>
-                          <PopupMenuEntry<_ItemActions>>[
-                            PopupMenuItem(
-                              value: _ItemActions.delete,
-                              child: Text(
-                                'Delete',
-                                key: Key('delete_row_$index'),
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: _ItemActions.edit,
-                              child: Text(
-                                'Edit',
-                                key: Key('edit_row_$index'),
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: _ItemActions.containsKey,
-                              child: Text(
-                                'Contains Key',
-                                key: Key('contains_row_$index'),
-                              ),
-                            ),
-                          ]),
-                  title: Text(
-                    _items[index].value,
-                    key: Key('title_row_$index'),
-                  ),
-                  subtitle: Text(
-                    _items[index].key,
-                    key: Key('subtitle_row_$index'),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      );
-
-  Future<void> _performAction(
-      _ItemActions action, _SecItem item, BuildContext context) async {
-    switch (action) {
-      case _ItemActions.delete:
-        await _storage.delete(
-            key: item.key,
-            iOptions: _getIOSOptions(),
-            aOptions: _getAndroidOptions());
-        _readAll();
-
-        break;
-      case _ItemActions.edit:
-        final result = await showDialog<String>(
-            context: context,
-            builder: (context) => _EditItemWidget(item.value));
-        if (result != null) {
-          await _storage.write(
-              key: item.key,
-              value: result,
-              iOptions: _getIOSOptions(),
-              aOptions: _getAndroidOptions());
-          _readAll();
-        }
-        break;
-      case _ItemActions.containsKey:
-        final result = await _storage.containsKey(key: item.key);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Contains Key: $result'),
-          // backgroundColor: Colors.green,
-          duration: const Duration(seconds: 4),
-        ));
-        break;
-    }
-  }
-
-  String _randomValue() {
-    final rand = Random();
-    final codeUnits = List.generate(20, (index) {
-      return rand.nextInt(26) + 65;
-    });
-
-    return String.fromCharCodes(codeUnits);
-  }
-}
-
-class _EditItemWidget extends StatelessWidget {
-  _EditItemWidget(String text)
-      : _controller = TextEditingController(text: text);
-
-  final TextEditingController _controller;
+class _RegisterPageState extends State<RegisterPage> {
+  final myEmail = TextEditingController();
+  final myFirstName = TextEditingController();
+  final myLastName = TextEditingController();
+  final myPassword = TextEditingController();
+  final myConfirmPassword = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Edit item'),
-      content: TextField(
-        key: const Key('title_field'),
-        controller: _controller,
-        autofocus: true,
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment(0, 4),
+          end: Alignment.topCenter,
+          colors: [Color(0xFF5ADBFF), Colors.white],
+        ),
       ),
-      actions: <Widget>[
-        TextButton(
-            key: const Key('cancel'),
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel')),
-        TextButton(
-            key: const Key('save'),
-            onPressed: () => Navigator.of(context).pop(_controller.text),
-            child: const Text('Save')),
-      ],
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              SizedBox(
+                width: 350,
+                height: 550,
+                child: Card(
+                    elevation: 10,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 30.0),
+                            child: RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(
+                                      text: 'SIGN UP',
+                                      style: GoogleFonts.montserrat(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 50,
+                                          color: const Color(0xFF094074))),
+                                ],
+                              ),
+                            ),
+                          ),
+                          TextField(
+                            controller: myEmail,
+                            decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
+                              labelText: 'Email',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color(0xFF094074),
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Row(children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: myFirstName,
+                                  decoration: InputDecoration(
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF094074),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    labelText: 'First Name',
+                                    labelStyle: const TextStyle(
+                                        color: Color(0xFF094074)),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 3,
+                                          color: Color(0xFF094074),
+                                          style: BorderStyle.solid),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              Expanded(
+                                child: TextField(
+                                  controller: myLastName,
+                                  decoration: InputDecoration(
+                                    focusedBorder: const OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xFF094074),
+                                        width: 2,
+                                      ),
+                                    ),
+                                    labelText: 'Last Name',
+                                    labelStyle: const TextStyle(
+                                        color: Color(0xFF094074)),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: const BorderSide(
+                                          width: 3,
+                                          color: Color(0xFF094074),
+                                          style: BorderStyle.solid),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ]),
+                          ),
+                          TextField(
+                            obscureText: true,
+                            controller: myPassword,
+                            decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
+                              labelText: 'Password',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
+                              filled: true,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color(0xFF094074),
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextField(
+                            obscureText: true,
+                            controller: myConfirmPassword,
+                            decoration: InputDecoration(
+                              focusedBorder: const OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Color(0xFF094074),
+                                  width: 2,
+                                ),
+                              ),
+                              labelText: 'Confirm Password',
+                              labelStyle:
+                                  const TextStyle(color: Color(0xFF094074)),
+                              filled: true,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 3,
+                                    color: Color(0xFF094074),
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 30,
+                          ),
+                          Container(
+                            width: 140,
+                            color: const Color.fromARGB(0, 0, 0, 0),
+                            margin: const EdgeInsets.only(top: 0),
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (myEmail.text.isNotEmpty &&
+                                    myPassword.text.isNotEmpty &&
+                                    myFirstName.text.isNotEmpty &&
+                                    myLastName.text.isNotEmpty &&
+                                    myConfirmPassword.text.isNotEmpty) {
+                                  if (myPassword.text ==
+                                      myConfirmPassword.text) {
+                                    var response = await register(
+                                        myPassword.text,
+                                        myEmail.text,
+                                        myConfirmPassword.text,
+                                        myFirstName.text,
+                                        myLastName.text);
+
+                                    if (response[0] == false) {
+                                      showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text("Error"),
+                                              content:
+                                                  Text(response[1].toString()),
+                                              actions: <Widget>[
+                                                TextButton(
+                                                  child: const Text("OK"),
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    } else {
+                                      Preferences.setLoggedIn(
+                                          context, true, response[1]);
+
+                                      Navigator.of(context)
+                                          .pushNamedAndRemoveUntil('/tickets',
+                                              (Route<dynamic> route) => false);
+                                    }
+                                  } else {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: const Text('Error'),
+                                          content: const Text(
+                                              'Passwords doesn\'t match'),
+                                          actions: <Widget>[
+                                            TextButton(
+                                              child: const Text('Ok'),
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  }
+                                  //save token to shared preferences
+
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog(
+                                        title: const Text('Error'),
+                                        content: const Text(
+                                            'Please fill all fields'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Ok'),
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                }
+                              },
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        const Color(0xFF094074)),
+                                elevation:
+                                    ButtonStyleButton.allOrNull<double>(2),
+                                shape: MaterialStateProperty.resolveWith<
+                                    OutlinedBorder>(
+                                  (_) {
+                                    return RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        side: const BorderSide(
+                                            color: Color(0xFF094074),
+                                            width: 4));
+                                  },
+                                ),
+                              ),
+                              child: Text(
+                                'REGISTER',
+                                style: GoogleFonts.montserrat(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w800,
+                                    color: Colors.white),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("Already have an account? "),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.of(context)
+                                        .pushNamedAndRemoveUntil('/login',
+                                            (Route<dynamic> route) => false);
+                                  },
+                                  child: Text(
+                                    "Sign in",
+                                    style: GoogleFonts.montserrat(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w800,
+                                        color: const Color(0xFFFFDD4A)),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-}
-
-class _SecItem {
-  _SecItem(this.key, this.value);
-
-  final String key;
-  final String value;
 }

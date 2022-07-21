@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:http/http.dart' as http;
-
 import '../main.dart';
 
 gettoken(String password, String email) async {
@@ -19,8 +17,6 @@ gettoken(String password, String email) async {
     }),
   );
   if (response.statusCode == 200) {
-    // If the server did return a 200 OK response,
-    // then parse the JSON.
     return json.decode(response.body)['api_token'].toString();
   } else {
     return "";

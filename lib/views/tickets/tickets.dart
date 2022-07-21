@@ -1,23 +1,21 @@
 import 'package:flutter/material.dart';
-
-import '../../main.dart';
+import 'package:laradesk_flutter/models/preferences.dart';
 
 class TicketList extends StatelessWidget {
   const TicketList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
+    return Scaffold(
+      body: Column(
         children: [
           const Spacer(),
           ElevatedButton(
             child: const Text(
-              'salut',
+              'logout',
             ),
-            onPressed: () async {
-              await storage.deleteAll();
-              print(await storage.readAll());
+            onPressed: () {
+              Preferences.setLoggedIn(context, false, null);
             },
           ),
         ],
