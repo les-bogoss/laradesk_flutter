@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:laradesk_flutter/views/tickets/tickets.dart';
+import 'package:laradesk_flutter/views/utils/settings.dart';
 
 import '../dashboard/data.dart';
-import '../home/home.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({
@@ -36,11 +36,11 @@ class _NavBarState extends State<NavBar> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.dashboard),
-              label: "Home",
+              label: "Dashboard",
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.settings),
-              label: "Home",
+              label: "Settings",
             ),
           ],
           currentIndex: _selectedIndex,
@@ -66,7 +66,7 @@ class _NavBarState extends State<NavBar> {
       case 1:
         return const DataPage();
       case 2:
-        return const HomePage();
+        return const Settings();
       default:
         return const TicketList();
     }

@@ -29,7 +29,6 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       //get param for dont go back on all app
-
       initialRoute: Preferences.getHomepage(),
       routes: appRoutes,
     );

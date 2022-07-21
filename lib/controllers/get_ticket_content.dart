@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import '../main.dart';
-import '../models/preferences.dart';
 
 Future<List> getTicketContents(String id) async {
   FlutterSecureStorage? secureStorage;

@@ -1,24 +1,94 @@
 import 'package:flutter/material.dart';
-import 'package:laradesk_flutter/models/preferences.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-class TicketList extends StatelessWidget {
+import '../../controllers/get_all_tickets.dart';
+
+class TicketList extends StatefulWidget {
   const TicketList({Key? key}) : super(key: key);
+
+  @override
+  State<TicketList> createState() => _TicketListState();
+}
+
+class _TicketListState extends State<TicketList> {
+  //get all tickets from server
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future getTickets() async {
+    //get all tickets from server
+    var tickets = await getAllTickets();
+    return tickets;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          const Spacer(),
-          ElevatedButton(
-            child: const Text(
-              'logout',
-            ),
-            onPressed: () {
-              Preferences.setLoggedIn(context, false, null);
-            },
+      appBar: AppBar(
+        title: Text(
+          'Tickets',
+          style: GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
           ),
-        ],
+        ),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF094074),
+        elevation: 0,
+      ),
+      //list view all tickets
+      body: FutureBuilder(
+        future: getTickets(),
+        initialData: const [],
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.data.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data.length,
+              itemBuilder: (BuildContext context, int index) {
+                return InkWell(
+                  onTap: () {
+                    //go to ticket detail
+                    Navigator.pushNamed(
+                      context,
+                      '/ticket',
+                      arguments: {'id': snapshot.data[index]['id'].toString()},
+                    );
+                  },
+                  child: ListTile(
+                    title: Text(snapshot.data[index]['title']),
+                    subtitle: Text(snapshot.data[index]['user_id'].toString()),
+                    leading: CircleAvatar(
+                      backgroundColor: Colors.blue,
+                      backgroundImage: NetworkImage(
+                          "https://34.140.17.43${snapshot.data[index]['avatar']}"),
+                    ),
+                    trailing: snapshot.data[index]['priority'] == 3
+                        ? const Icon(
+                            Icons.error,
+                            color: Colors.red,
+                          )
+                        : snapshot.data[index]['priority'] == 2
+                            ? const Icon(
+                                Icons.error,
+                                color: Colors.yellow,
+                              )
+                            : const Icon(
+                                Icons.error,
+                                color: Colors.green,
+                              ),
+                  ),
+                );
+              },
+            );
+          }
+        },
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:laradesk_flutter/controllers/create_ticket_content.dart';
@@ -80,7 +80,16 @@ class _TicketPageState extends State<TicketPage> {
 
       return Scaffold(
           appBar: AppBar(
-            title: Text("Ticket - ${args['id']}"),
+            centerTitle: true,
+            backgroundColor: const Color(0xFF094074),
+            elevation: 0,
+            title: Text(
+              "Ticket - ${args['id']}",
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
           body: RefreshIndicator(
             onRefresh: refresh,
@@ -95,8 +104,11 @@ class _TicketPageState extends State<TicketPage> {
                               snapshot.data!['priority'].toString();
                           String? currentStatus =
                               status[snapshot.data!['status_id'] - 1];
-                          String? currentRating =
-                              snapshot.data!['rating'].toString();
+                          String? currentRating = "";
+                          snapshot.data!['rating'].toString() == "0"
+                              ? currentRating = 'N/A'
+                              : currentRating =
+                                  snapshot.data!['rating'].toString();
                           return Padding(
                             padding: const EdgeInsets.all(20),
                             child: Column(
@@ -236,14 +248,16 @@ class _TicketPageState extends State<TicketPage> {
                                                 padding:
                                                     const EdgeInsets.all(10),
                                                 child: Ink(
-                                                  decoration: ShapeDecoration(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    shape: const CircleBorder(),
+                                                  decoration:
+                                                      const ShapeDecoration(
+                                                    color: Color(0xFF094074),
+                                                    shape: CircleBorder(),
                                                   ),
                                                   child: IconButton(
                                                       icon: const Icon(
-                                                          Icons.attach_file),
+                                                        Icons.attach_file,
+                                                        color: Colors.white,
+                                                      ),
                                                       onPressed: () =>
                                                           _getImage()),
                                                 ),
@@ -251,11 +265,16 @@ class _TicketPageState extends State<TicketPage> {
                                               _pickedFile == null
                                                   ? const Text(
                                                       'Aucun fichier sélectionné')
-                                                  : Text(
-                                                      'Fichier sélectionné : ${_pickedFile?.path}'),
+                                                  : const Text(
+                                                      'Fichier sélectionné.'),
                                             ],
                                           ),
                                           ElevatedButton(
+                                            style: ButtonStyle(
+                                              backgroundColor:
+                                                  MaterialStateProperty.all(
+                                                      const Color(0xFF094074)),
+                                            ),
                                             onPressed: () {
                                               // Validate will return true if the form is valid, or false if
                                               // the form is invalid.
@@ -272,18 +291,21 @@ class _TicketPageState extends State<TicketPage> {
                                                 ));
                                                 // Add the comment to the ticket
                                                 createTicketContent(
-                                                    args['id'] ?? '',
-                                                    myTitle.text);
+                                                        args['id'] ?? '',
+                                                        myTitle.text)
+                                                    .then(((value) =>
+                                                        setState(() {
+                                                          ticketContents =
+                                                              getTicketContents(
+                                                                  args['id'] ??
+                                                                      "");
+                                                        })));
 
                                                 // Clear the text field
                                                 myTitle.clear();
 
                                                 // Refresh the ticket contents
-                                                setState(() {
-                                                  ticketContents =
-                                                      getTicketContents(
-                                                          args['id'] ?? "");
-                                                });
+
                                               }
                                             },
                                             child: const Text('Submit'),
@@ -343,9 +365,16 @@ class _TicketPageState extends State<TicketPage> {
                                   contents[index]['avatar'],
                                   context),
                               onDismissed: (direction) {
-                                contents.remove(contents[index]);
                                 deleteContent(args['id'] ?? '',
-                                    contents[index]['id'].toString());
+                                        contents[index]['id'].toString())
+                                    .then((value) =>
+                                        contents.remove(contents[index]))
+                                    .then((value) {
+                                  setState(() {
+                                    ticketContents =
+                                        getTicketContents(args['id'] ?? '');
+                                  });
+                                });
                               },
                             );
                           },
