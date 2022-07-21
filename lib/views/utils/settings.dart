@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:laradesk_flutter/models/preferences.dart';
 
 class Settings extends StatelessWidget {
   const Settings({Key? key}) : super(key: key);
@@ -19,8 +20,12 @@ class Settings extends StatelessWidget {
         backgroundColor: const Color(0xFF094074),
         elevation: 0,
       ),
-      body: const Center(
-        child: Text('Settings'),
+      body: Center(
+        child: ElevatedButton(
+            onPressed: () {
+              Preferences.setLoggedIn(context, false, null);
+            },
+            child: const Text('Logout')),
       ),
     );
   }
