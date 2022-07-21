@@ -194,7 +194,12 @@ class _LoginPageState extends State<LoginPage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                const Text("Don't have an account? "),
+                                Text(
+                                  "Don't have an account? ",
+                                  style: GoogleFonts.montserrat(
+                                    fontSize: 16,
+                                  ),
+                                ),
                                 InkWell(
                                   onTap: () {
                                     Navigator.of(context)
@@ -204,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                                   child: Text(
                                     "Sign up",
                                     style: GoogleFonts.montserrat(
-                                        fontSize: 14,
+                                        fontSize: 16,
                                         fontWeight: FontWeight.w800,
                                         color: const Color(0xFFFFDD4A)),
                                     textAlign: TextAlign.center,

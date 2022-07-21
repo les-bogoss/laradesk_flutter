@@ -25,22 +25,26 @@ class Preferences {
     apiToken = apiToken ?? "";
     if (loggedIn) {
       loggedIn = true;
-      secureStorage
-          ?.write(key: 'apiToken', value: apiToken)
-          .then((value) => {Navigator.pushNamed(context, '/')});
+      secureStorage?.write(key: 'apiToken', value: apiToken).then((value) => {
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/home', (route) => false)
+          });
     } else {
       loggedIn = false;
-      secureStorage
-          ?.delete(key: 'apiToken')
-          .then((value) => {Navigator.pushNamed(context, '/login')});
+      secureStorage?.delete(key: 'apiToken').then((value) => {
+            Navigator.pushReplacementNamed(
+              context,
+              '/unlogged',
+            )
+          });
     }
   }
 
   static getHomepage() {
-    if (apiToken != null) {
-      return "/";
+    if (apiToken == null) {
+      return "/unlogged";
     } else {
-      return '/unlogged';
+      return '/home';
     }
   }
 }

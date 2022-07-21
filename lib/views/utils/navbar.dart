@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laradesk_flutter/views/tickets/tickets.dart';
 
+import '../dashboard/data.dart';
 import '../home/home.dart';
 
 class NavBar extends StatefulWidget {
@@ -24,34 +25,37 @@ class _NavBarState extends State<NavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.featured_play_list_outlined),
-            label: "Tickets",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: "Home",
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: const Color(0xFFFFDD4A),
-        unselectedItemColor: Colors.white,
-        backgroundColor: const Color(0xFF094074),
-        elevation: 0,
-        onTap: (int index) async {
-          setState(() {
-            _selectedIndex = index;
-          });
-        },
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.featured_play_list_outlined),
+              label: "Tickets",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard),
+              label: "Home",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.settings),
+              label: "Home",
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: const Color(0xFFFFDD4A),
+          unselectedItemColor: Colors.white,
+          backgroundColor: const Color(0xFF094074),
+          elevation: 0,
+          onTap: (int index) async {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+        ),
+        body: _buildPage(_selectedIndex),
       ),
-      body: _buildPage(_selectedIndex),
     );
   }
 
@@ -60,7 +64,7 @@ class _NavBarState extends State<NavBar> {
       case 0:
         return const TicketList();
       case 1:
-        return const HomePage();
+        return const DataPage();
       case 2:
         return const HomePage();
       default:

@@ -179,7 +179,7 @@ class _DataPageState extends State<DataPage> {
             ),
           ),
           centerTitle: true,
-          backgroundColor: const Color.fromARGB(255, 157, 39, 39),
+          backgroundColor: const Color(0xFF094074),
           elevation: 0,
         ),
         body: FutureBuilder(
