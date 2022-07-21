@@ -5,6 +5,7 @@ import 'package:laradesk_flutter/views/utils/navbar.dart';
 import 'views/home/login.dart';
 import 'views/home/register.dart';
 import 'views/tickets/ticket.dart';
+import 'views/dashboard/data.dart';
 
 var appRoutes = {
   '/': (context) => const NavBar(
@@ -15,4 +16,5 @@ var appRoutes = {
   '/register': (context) => const RegisterPage(),
   '/tickets': (context) => const TicketList(),
   '/ticket': (context) => const TicketPage(),
+  '/dashboard': (context) => const DataPage(),
 };
