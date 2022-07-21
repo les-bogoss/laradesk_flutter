@@ -7,7 +7,6 @@ import 'models/preferences.dart';
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await beforeLaunch();
-
   runApp(MyApp());
 }
 
@@ -29,14 +28,16 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: Preferences2.getHomepage(),
+      //get param for dont go back on all app
+
+      initialRoute: Preferences.getHomepage(),
       routes: appRoutes,
     );
   }
 }
 
 Future beforeLaunch() async {
-  await Preferences2.init();
+  await Preferences.init();
 }
 
 class MyHttpOverrides extends HttpOverrides {
