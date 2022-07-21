@@ -1,32 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class Preferences {
-  static SharedPreferences? prefs;
+  static FlutterSecureStorage? secureStorage;
+  static String? apiToken;
   static bool loggedIn = false;
-  static String? token;
 
   static Future init() async {
-    prefs = await SharedPreferences.getInstance();
-    loggedIn = prefs?.getBool('loggedIn') ?? false;
-  }
+    try {
+      secureStorage = const FlutterSecureStorage();
+      apiToken = await secureStorage?.read(key: 'apiToken');
 
-  static void setLoggedIn(BuildContext context, bool value) {
-    loggedIn = value;
-    prefs?.setBool('loggedIn', value);
-
-    if (loggedIn) {
-      Navigator.pushNamed(context, '/tickets');
-    } else {
-      Navigator.pushNamed(context, '/');
+      print("apiToken: is $apiToken");
+      loggedIn = (apiToken != null);
+    } catch (e) {
+      throw Exception(e);
     }
   }
 
-  static String getHomepage() {
+  static void setLoggedIn(
+      BuildContext context, bool loggedIn, String? apiToken) {
+    /* Simulatiuon du JWT récupéré depuis l'API */
+
+    apiToken = apiToken ?? "";
     if (loggedIn) {
-      return '/tickets';
+      loggedIn = true;
+      secureStorage
+          ?.write(key: 'apiToken', value: apiToken)
+          .then((value) => {Navigator.pushNamed(context, '/')});
     } else {
-      return '/';
+      loggedIn = false;
+      secureStorage
+          ?.delete(key: 'apiToken')
+          .then((value) => {Navigator.pushNamed(context, '/login')});
+    }
+  }
+
+  static getHomepage() {
+    if (apiToken != null) {
+      return "/";
+    } else {
+      return '/unlogged';
     }
   }
 }
