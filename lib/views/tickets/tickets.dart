@@ -24,6 +24,10 @@ class _TicketListState extends State<TicketList> {
     return tickets;
   }
 
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,55 +44,61 @@ class _TicketListState extends State<TicketList> {
         elevation: 0,
       ),
       //list view all tickets
-      body: FutureBuilder(
-        future: getTickets(),
-        initialData: const [],
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.data.isEmpty) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    //go to ticket detail
-                    Navigator.pushNamed(
-                      context,
-                      '/ticket',
-                      arguments: {'id': snapshot.data[index]['id'].toString()},
-                    );
-                  },
-                  child: ListTile(
-                    title: Text(snapshot.data[index]['title']),
-                    subtitle: Text(snapshot.data[index]['user_id'].toString()),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      backgroundImage: NetworkImage(
-                          "https://34.140.17.43${snapshot.data[index]['avatar']}"),
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: FutureBuilder(
+          future: getTickets(),
+          initialData: const [],
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            if (snapshot.data.isEmpty) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else {
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {
+                      //go to ticket detail
+                      Navigator.pushNamed(
+                        context,
+                        '/ticket',
+                        arguments: {
+                          'id': snapshot.data[index]['id'].toString()
+                        },
+                      );
+                    },
+                    child: ListTile(
+                      title: Text(snapshot.data[index]['title']),
+                      subtitle:
+                          Text(snapshot.data[index]['updated_at'].toString()),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        backgroundImage: NetworkImage(
+                            "https://34.140.17.43${snapshot.data[index]['avatar']}"),
+                      ),
+                      trailing: snapshot.data[index]['priority'] == 3
+                          ? const Icon(
+                              Icons.error,
+                              color: Colors.red,
+                            )
+                          : snapshot.data[index]['priority'] == 2
+                              ? const Icon(
+                                  Icons.error,
+                                  color: Colors.yellow,
+                                )
+                              : const Icon(
+                                  Icons.error,
+                                  color: Colors.green,
+                                ),
                     ),
-                    trailing: snapshot.data[index]['priority'] == 3
-                        ? const Icon(
-                            Icons.error,
-                            color: Colors.red,
-                          )
-                        : snapshot.data[index]['priority'] == 2
-                            ? const Icon(
-                                Icons.error,
-                                color: Colors.yellow,
-                              )
-                            : const Icon(
-                                Icons.error,
-                                color: Colors.green,
-                              ),
-                  ),
-                );
-              },
-            );
-          }
-        },
+                  );
+                },
+              );
+            }
+          },
+        ),
       ),
     );
   }
