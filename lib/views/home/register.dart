@@ -230,7 +230,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                             );
                                           });
                                     } else {
-                                      Preferences2.setLoggedIn(
+                                      Preferences.setLoggedIn(
                                           context, true, response[1]);
 
                                       Navigator.of(context)

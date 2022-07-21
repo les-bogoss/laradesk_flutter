@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class Preferences2 {
+class Preferences {
   static FlutterSecureStorage? secureStorage;
   static String? apiToken;
   static bool loggedIn = false;
@@ -22,9 +22,7 @@ class Preferences2 {
       BuildContext context, bool loggedIn, String? apiToken) {
     /* Simulatiuon du JWT récupéré depuis l'API */
 
-    print("My user is logged in: $loggedIn");
     apiToken = apiToken ?? "";
-
     if (loggedIn) {
       loggedIn = true;
       secureStorage

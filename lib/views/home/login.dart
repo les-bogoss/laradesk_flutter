@@ -139,7 +139,7 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                     );
                                   } else {
-                                    Preferences2.setLoggedIn(
+                                    Preferences.setLoggedIn(
                                         context, true, token);
                                   }
                                 } else {

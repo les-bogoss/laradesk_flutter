@@ -15,7 +15,7 @@ class TicketList extends StatelessWidget {
               'logout',
             ),
             onPressed: () {
-              Preferences2.setLoggedIn(context, false, null);
+              Preferences.setLoggedIn(context, false, null);
             },
           ),
         ],
