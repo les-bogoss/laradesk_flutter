@@ -22,13 +22,7 @@ class _DataPageState extends State<DataPage> {
   late List<charts.Series<dynamic, DateTime>> _openClose = [];
   late List<charts.Series<ColumnData, String>> _satisfaction = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _chartdata();
-  }
-
-  void _chartdata() async {
+  Future<List> _chartdata() async {
     _category = [];
     var response = await getdata();
 
@@ -85,7 +79,6 @@ class _DataPageState extends State<DataPage> {
     i = ticketClose.length;
     for (var map in ticketClose) {
       map.forEach((date, number) {
-        print(number);
         closeData.add(MyRow(DateTime.parse(date), number));
         i--;
       });
@@ -165,6 +158,13 @@ class _DataPageState extends State<DataPage> {
             charts.Color.fromHex(code: satisfaction.color),
       ),
     ];
+    return [_category, _status, _openClose, _satisfaction];
+  }
+
+  @override
+  initState() {
+    super.initState();
+    _chartdata();
   }
 
   @override
@@ -182,19 +182,30 @@ class _DataPageState extends State<DataPage> {
           backgroundColor: const Color.fromARGB(255, 157, 39, 39),
           elevation: 0,
         ),
-        body: ListView(
-          children: [
-            ChartCard(DonutPieChart(_category, animate: true)),
-            ChartCard(
-              DonutPieChart(_status, animate: true),
-            ),
-            ChartCard(
-              CustomAxisTickFormatters(_openClose, animate: false),
-            ),
-            ChartCard(
-              VerticalBarLabelChart(_satisfaction, animate: false),
-            ),
-          ],
-        ));
+        body: FutureBuilder(
+            future: _chartdata(),
+            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+              List<Widget> children;
+              if (snapshot.hasData) {
+                children = <Widget>[
+                  ChartCard(DonutPieChart(snapshot.data![0], animate: true)),
+                  ChartCard(
+                    DonutPieChart(snapshot.data![1], animate: true),
+                  ),
+                  ChartCard(
+                    CustomAxisTickFormatters(snapshot.data![2], animate: false),
+                  ),
+                  ChartCard(
+                    VerticalBarLabelChart(snapshot.data![3], animate: false),
+                  ),
+                ];
+                return ListView(
+                  children: children,
+                );
+              }
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }));
   }
 }
