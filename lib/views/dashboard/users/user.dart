@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:laradesk_flutter/controllers/get_user.dart';
+import 'package:laradesk_flutter/controllers/delete_user.dart';
 
 class UserPage extends StatefulWidget {
   const UserPage({
@@ -91,6 +92,11 @@ class _UserPageState extends State<UserPage> {
                             const Padding(padding: EdgeInsets.all(10)),
                             Text(
                                 "Created date : ${DateFormat('dd MMMM yyyy').format(DateTime.parse(snapshot.data!['created_at']))}"),
+                            ElevatedButton(
+                                child: const Text('Delete'),
+                                onPressed: () {
+                                  showAlertDialog(context, snapshot);
+                                }),
                           ],
                         ),
                       );
@@ -153,4 +159,38 @@ Widget ticketContentTile(
         ),
         onTap: () {},
       ));
+}
+
+showAlertDialog(BuildContext context, dynamic snapshot) {
+  // set up the buttons
+  Widget cancelButton = FlatButton(
+    child: const Text("No"),
+    onPressed: () {
+      Navigator.of(context).pop();
+    },
+  );
+  Widget continueButton = FlatButton(
+    child: const Text("Yes"),
+    onPressed: () {
+      deleteUser(snapshot.data!['id'].toString());
+      Navigator.of(context).pop();
+      Navigator.of(context).pop(true);
+    },
+  );
+  // set up the AlertDialog
+  AlertDialog alert = AlertDialog(
+    title: const Text("Waning"),
+    content: const Text("Are you sure you want to delete this user?"),
+    actions: [
+      continueButton,
+      cancelButton,
+    ],
+  );
+  // show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
 }

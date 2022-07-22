@@ -167,6 +167,10 @@ class _DataPageState extends State<DataPage> {
     _chartdata();
   }
 
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -182,34 +186,38 @@ class _DataPageState extends State<DataPage> {
           backgroundColor: const Color(0xFF094074),
           elevation: 0,
         ),
-        body: FutureBuilder(
-            future: _chartdata(),
-            builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-              List<Widget> children;
-              if (snapshot.hasData) {
-                children = <Widget>[
-                  ChartCard(DonutPieChart(snapshot.data![0], animate: true),
-                      "Pourcentage of tickets by categories"),
-                  ChartCard(
-                    DonutPieChart(snapshot.data![1], animate: true),
-                    "Pourcentage of tickets by status",
-                  ),
-                  ChartCard(
-                    CustomAxisTickFormatters(snapshot.data![2], animate: true),
-                    "Tickets opened and closed per day",
-                  ),
-                  ChartCard(
-                    VerticalBarLabelChart(snapshot.data![3], animate: true),
-                    "Pourcentage of satisfaction",
-                  ),
-                ];
-                return ListView(
-                  children: children,
+        body: RefreshIndicator(
+          onRefresh: refresh,
+          child: FutureBuilder(
+              future: _chartdata(),
+              builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+                List<Widget> children;
+                if (snapshot.hasData) {
+                  children = <Widget>[
+                    ChartCard(DonutPieChart(snapshot.data![0], animate: true),
+                        "Pourcentage of tickets by categories"),
+                    ChartCard(
+                      DonutPieChart(snapshot.data![1], animate: true),
+                      "Pourcentage of tickets by status",
+                    ),
+                    ChartCard(
+                      CustomAxisTickFormatters(snapshot.data![2],
+                          animate: true),
+                      "Tickets opened and closed per day",
+                    ),
+                    ChartCard(
+                      VerticalBarLabelChart(snapshot.data![3], animate: true),
+                      "Pourcentage of satisfaction",
+                    ),
+                  ];
+                  return ListView(
+                    children: children,
+                  );
+                }
+                return const Center(
+                  child: CircularProgressIndicator(),
                 );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }));
+              }),
+        ));
   }
 }

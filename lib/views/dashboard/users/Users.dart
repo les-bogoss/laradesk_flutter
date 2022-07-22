@@ -23,6 +23,10 @@ class _UsersListState extends State<UsersList> {
     return users;
   }
 
+  Future<void> refresh() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,32 +52,37 @@ class _UsersListState extends State<UsersList> {
               child: CircularProgressIndicator(),
             );
           } else {
-            return ListView.builder(
-              itemCount: snapshot.data.length,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () {
-                    //go to ticket detail
-                    Navigator.pushNamed(
-                      context,
-                      '/user',
-                      arguments: {'id': snapshot.data[index]['id'].toString()},
-                    );
-                  },
-                  child: ListTile(
-                    title: Text(
-                        snapshot.data[index]['last_name'].toUpperCase() +
-                            ' ' +
-                            snapshot.data[index]['first_name']),
-                    subtitle: Text(snapshot.data[index]['email']),
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.blue,
-                      backgroundImage: NetworkImage(
-                          "https://34.140.17.43${snapshot.data[index]['avatar']}"),
+            return RefreshIndicator(
+              onRefresh: refresh,
+              child: ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return InkWell(
+                    onTap: () {
+                      //go to ticket detail
+                      Navigator.pushNamed(
+                        context,
+                        '/user',
+                        arguments: {
+                          'id': snapshot.data[index]['id'].toString()
+                        },
+                      ).then((value) => refresh());
+                    },
+                    child: ListTile(
+                      title: Text(
+                          snapshot.data[index]['last_name'].toUpperCase() +
+                              ' ' +
+                              snapshot.data[index]['first_name']),
+                      subtitle: Text(snapshot.data[index]['email']),
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.blue,
+                        backgroundImage: NetworkImage(
+                            "https://34.140.17.43${snapshot.data[index]['avatar']}"),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },

@@ -4,7 +4,6 @@ import 'package:laradesk_flutter/views/utils/navbar.dart';
 import 'views/home/login.dart';
 import 'views/home/register.dart';
 import 'views/tickets/ticket.dart';
-import 'views/dashboard/data.dart';
 import 'views/utils/NavDashboard.dart';
 import 'views/dashboard/users/users.dart';
 import 'views/dashboard/users/user.dart';
