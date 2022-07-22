@@ -104,7 +104,7 @@ class _TicketPageState extends State<TicketPage> {
                               status[snapshot.data!['status_id'] - 1];
                           String? currentRating = "";
 
-                          snapshot.data!['rating'].toString() == "0"
+                          snapshot.data!['rating'] == null
                               ? currentRating = 'N/A'
                               : currentRating =
                                   snapshot.data!['rating'].toString();
@@ -316,7 +316,9 @@ class _TicketPageState extends State<TicketPage> {
                                                     // Add the comment to the ticket
                                                     createTicketContent(
                                                             args['id'] ?? '',
-                                                            myTitle.text)
+                                                            myTitle.text,
+                                                            _image!
+                                                                .readAsBytesSync())
                                                         .then(((value) =>
                                                             setState(() {
                                                               ticketContents =
