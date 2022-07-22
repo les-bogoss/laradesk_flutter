@@ -94,6 +94,8 @@ class _UserPageState extends State<UserPage> {
                                 "Created date : ${DateFormat('dd MMMM yyyy').format(DateTime.parse(snapshot.data!['created_at']))}"),
                             ElevatedButton(
                                 child: const Text('Delete'),
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.red),
                                 onPressed: () {
                                   showAlertDialog(context, snapshot);
                                 }),
