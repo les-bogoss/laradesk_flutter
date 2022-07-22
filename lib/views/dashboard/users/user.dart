@@ -79,6 +79,16 @@ class _UserPageState extends State<UserPage> {
                                 "Name : ${snapshot.data!['last_name'].toUpperCase()} ${snapshot.data!['first_name']}"),
                             Text("Email : ${snapshot.data!['email']}"),
                             const Padding(padding: EdgeInsets.all(10)),
+                            snapshot.data!['roles'].length > 0
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                          "Roles : ${snapshot.data!['roles'].map((role) => role['name']).toList().join(', ')}"),
+                                    ],
+                                  )
+                                : const Text("No role"),
+                            const Padding(padding: EdgeInsets.all(10)),
                             Text(
                                 "Created date : ${DateFormat('dd MMMM yyyy').format(DateTime.parse(snapshot.data!['created_at']))}"),
                           ],

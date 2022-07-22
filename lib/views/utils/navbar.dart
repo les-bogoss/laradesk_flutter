@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:laradesk_flutter/views/tickets/tickets.dart';
 import 'package:laradesk_flutter/views/utils/settings.dart';
 
-import '../dashboard/dashboard.dart';
+import 'NavDashboard.dart';
 
 class NavBar extends StatefulWidget {
   const NavBar({
