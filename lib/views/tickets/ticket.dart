@@ -103,10 +103,14 @@ class _TicketPageState extends State<TicketPage> {
                           String? currentStatus =
                               status[snapshot.data!['status_id'] - 1];
                           String? currentRating = "";
-                          snapshot.data!['rating'].toString() == "0"
-                              ? currentRating = 'N/A'
-                              : currentRating =
-                                  snapshot.data!['rating'].toString();
+                          print(snapshot.data!['rating']);
+                          if (snapshot.data!['rating'] == null ||
+                              snapshot.data!['rating'] == 0) {
+                            currentRating = "N/A";
+                          } else {
+                            currentRating = snapshot.data!['rating'].toString();
+                          }
+
                           return Padding(
                             padding: const EdgeInsets.all(20),
                             child: Column(
@@ -139,10 +143,11 @@ class _TicketPageState extends State<TicketPage> {
                                             snapshot.data!['priority'] =
                                                 int.parse(newValue!);
                                             updateTicket(args['id'] ?? '',
-                                                snapshot.data!);
-                                            setState(() {
-                                              currentPriority = newValue;
-                                            });
+                                                    snapshot.data!)
+                                                .then((value) => setState(() {
+                                                      currentPriority =
+                                                          newValue;
+                                                    }));
                                           },
                                         ),
                                       ],
@@ -175,12 +180,14 @@ class _TicketPageState extends State<TicketPage> {
                                       onChanged: (String? newValue) {
                                         snapshot.data!['status_id'] =
                                             status.indexOf(newValue!) + 1;
-                                        updateTicket(
-                                            args['id'] ?? '', snapshot.data!);
-                                        setState(() {
-                                          currentStatus = status[
-                                              snapshot.data!['status_id'] - 1];
-                                        });
+                                        updateTicket(args['id'] ?? '',
+                                                snapshot.data!)
+                                            .then((value) => setState(() {
+                                                  currentStatus = status[
+                                                      snapshot.data![
+                                                              'status_id'] -
+                                                          1];
+                                                }));
                                       },
                                     ),
                                   ],
@@ -206,22 +213,26 @@ class _TicketPageState extends State<TicketPage> {
                                       // After selecting the desired option,it will
                                       // change button value to selected value
                                       onChanged: (String? newValue) {
-                                        if (newValue == 'N/A') {
-                                          snapshot.data!['rating'] = null;
-                                        } else {
-                                          snapshot.data!['rating'] =
-                                              ratings.indexOf(newValue!);
-                                        }
+                                        newValue == "N/A"
+                                            ? snapshot.data!['rating'] = "0"
+                                            : snapshot.data!['rating'] =
+                                                newValue;
 
                                         // Update the ticket rating
                                         updateTicket(
                                           args['id']!,
                                           snapshot.data!,
-                                        );
+                                        ).then((value) => setState(
+                                              () {
+                                                setState(() {
+                                                  newValue == "N/A"
+                                                      ? currentRating = "N/A"
+                                                      : currentRating =
+                                                          newValue;
+                                                });
+                                              },
+                                            ));
                                         // Refresh the ticket
-                                        setState(() {
-                                          currentRating = newValue;
-                                        });
                                       },
                                     ),
                                   ],
