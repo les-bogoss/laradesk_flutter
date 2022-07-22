@@ -228,6 +228,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                             );
                                           });
                                     } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                        content:
+                                            Text('Registration Successful'),
+                                        duration: Duration(seconds: 3),
+                                      ));
                                       Navigator.of(context)
                                           .pushNamedAndRemoveUntil('/login',
                                               (Route<dynamic> route) => false);
