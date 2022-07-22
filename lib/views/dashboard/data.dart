@@ -188,15 +188,19 @@ class _DataPageState extends State<DataPage> {
               List<Widget> children;
               if (snapshot.hasData) {
                 children = <Widget>[
-                  ChartCard(DonutPieChart(snapshot.data![0], animate: true)),
+                  ChartCard(DonutPieChart(snapshot.data![0], animate: true),
+                      "Pourcentage of tickets by categories"),
                   ChartCard(
                     DonutPieChart(snapshot.data![1], animate: true),
+                    "Pourcentage of tickets by status",
                   ),
                   ChartCard(
                     CustomAxisTickFormatters(snapshot.data![2], animate: true),
+                    "Tickets opened and closed per day",
                   ),
                   ChartCard(
                     VerticalBarLabelChart(snapshot.data![3], animate: true),
+                    "Pourcentage of satisfaction",
                   ),
                 ];
                 return ListView(
