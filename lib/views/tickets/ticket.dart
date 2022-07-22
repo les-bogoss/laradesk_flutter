@@ -33,8 +33,6 @@ class _TicketPageState extends State<TicketPage> {
       setState(() {
         _image = File(_pickedFile!.path);
       });
-    } else {
-      print('image: $_image');
     }
   }
 
@@ -209,12 +207,52 @@ class _TicketPageState extends State<TicketPage> {
                                         ),
                                       ],
                                     ),
-                                    Row(
-                                      children: [
-                                        const Text('rating'),
-                                        DropdownButton(
-                                          // Initial Value
-                                          value: currentRating,
+
+                                    Text(DateFormat('hh:mm dd-MM-yyyy').format(
+                                        DateTime.parse(
+                                            snapshot.data!['created_at']))),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('status'),
+                                    DropdownButton(
+                                      // Initial Value
+                                      value: currentStatus,
+
+                                      // Down Arrow Icon
+                                      icon:
+                                          const Icon(Icons.keyboard_arrow_down),
+
+                                      // Array list of items
+                                      items: status.map((String items) {
+                                        return DropdownMenuItem(
+                                          value: items,
+                                          child: Text(items),
+                                        );
+                                      }).toList(),
+                                      // After selecting the desired option,it will
+                                      // change button value to selected value
+                                      onChanged: (String? newValue) {
+                                        snapshot.data!['status_id'] =
+                                            status.indexOf(newValue!) + 1;
+                                        updateTicket(
+                                            args['id'] ?? '', snapshot.data!);
+                                        setState(() {
+                                          currentStatus = status[
+                                              snapshot.data!['status_id'] - 1];
+                                        });
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text('rating'),
+                                    DropdownButton(
+                                      // Initial Value
+                                      value: currentRating,
+
 
                                           // Down Arrow Icon
                                           icon: const Icon(
@@ -390,6 +428,7 @@ class _TicketPageState extends State<TicketPage> {
                                           contents[index]["created_at"])),
                                   contents[index]['first_name'],
                                   contents[index]['avatar'],
+                                  contents[index]['media'] ?? '',
                                   context),
                               onDismissed: (direction) {
                                 deleteContent(args['id'] ?? '',
@@ -420,8 +459,8 @@ class _TicketPageState extends State<TicketPage> {
   }
 }
 
-Widget ticketContentTile(
-    String text, String date, String author, String avatar, context) {
+Widget ticketContentTile(String text, String date, String author, String avatar,
+    String media, context) {
   return Container(
       width: MediaQuery.of(context).size.width,
       padding: const EdgeInsets.all(10),
@@ -443,15 +482,29 @@ Widget ticketContentTile(
                     '$author - $date',
                     style: const TextStyle(fontSize: 15.0),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 5.5),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      child: Text(
-                        text.replaceAll('<br />', '\n'),
-                        style: const TextStyle(fontSize: 13.0),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.5),
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Text(
+                            text.replaceAll('<br />', '\n'),
+                            style: const TextStyle(fontSize: 13.0),
+                          ),
+                        ),
                       ),
-                    ),
+                      media != ''
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 5.5),
+                              child: SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.8,
+                                  child: Image.network(
+                                    "https://34.140.17.43/$media",
+                                  )))
+                          : Container()
+                    ],
                   ),
                 ],
               ),
