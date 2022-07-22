@@ -65,7 +65,7 @@ class _UsersListState extends State<UsersList> {
                         snapshot.data[index]['last_name'].toUpperCase() +
                             ' ' +
                             snapshot.data[index]['first_name']),
-                    subtitle: Text(snapshot.data[index]['id'].toString()),
+                    subtitle: Text(snapshot.data[index]['email']),
                     leading: CircleAvatar(
                       backgroundColor: Colors.blue,
                       backgroundImage: NetworkImage(
