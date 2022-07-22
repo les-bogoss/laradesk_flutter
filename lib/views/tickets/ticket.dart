@@ -103,35 +103,89 @@ class _TicketPageState extends State<TicketPage> {
                           String? currentStatus =
                               status[snapshot.data!['status_id'] - 1];
                           String? currentRating = "";
-                          print(snapshot.data!['rating']);
-                          if (snapshot.data!['rating'] == null ||
-                              snapshot.data!['rating'] == 0) {
-                            currentRating = "N/A";
-                          } else {
-                            currentRating = snapshot.data!['rating'].toString();
-                          }
 
-                          return Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                          snapshot.data!['rating'] == null
+                              ? currentRating = 'N/A'
+                              : currentRating =
+                                  snapshot.data!['rating'].toString();
+                          return Column(
+                            children: [
+                              Container(
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF094074),
+                                ),
+                                width: double.infinity,
+                                height: 50,
+                                child: Text(
+                                  snapshot.data!['title'],
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
                                   children: [
                                     Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
-                                        const Text('priority'),
+                                        Row(
+                                          children: [
+                                            const Text('priority'),
+                                            DropdownButton(
+                                              // Initial Value
+                                              value: currentPriority,
+
+                                              // Down Arrow Icon
+                                              icon: const Icon(
+                                                  Icons.keyboard_arrow_down),
+
+                                              // Array list of items
+                                              items:
+                                                  prioritys.map((String items) {
+                                                return DropdownMenuItem(
+                                                  value: items,
+                                                  child: Text(items),
+                                                );
+                                              }).toList(),
+                                              // After selecting the desired option,it will
+                                              // change button value to selected value
+                                              onChanged: (String? newValue) {
+                                                snapshot.data!['priority'] =
+                                                    int.parse(newValue!);
+                                                updateTicket(args['id'] ?? '',
+                                                    snapshot.data!);
+                                                setState(() {
+                                                  currentPriority = newValue;
+                                                });
+                                              },
+                                            ),
+                                          ],
+                                        ),
+                                        Text(DateFormat('hh:mm dd-MM-yyyy')
+                                            .format(DateTime.parse(
+                                                snapshot.data!['created_at']))),
+                                      ],
+                                    ),
+                                    Row(
+                                      children: [
+                                        const Text('status'),
                                         DropdownButton(
                                           // Initial Value
-                                          value: currentPriority,
+                                          value: currentStatus,
 
                                           // Down Arrow Icon
                                           icon: const Icon(
                                               Icons.keyboard_arrow_down),
 
                                           // Array list of items
-                                          items: prioritys.map((String items) {
+                                          items: status.map((String items) {
                                             return DropdownMenuItem(
                                               value: items,
                                               child: Text(items),
@@ -140,8 +194,9 @@ class _TicketPageState extends State<TicketPage> {
                                           // After selecting the desired option,it will
                                           // change button value to selected value
                                           onChanged: (String? newValue) {
-                                            snapshot.data!['priority'] =
-                                                int.parse(newValue!);
+                                            snapshot.data!['status_id'] =
+                                                status.indexOf(newValue!) + 1;
+                                            print(snapshot.data!['status_id']);
                                             updateTicket(args['id'] ?? '',
                                                     snapshot.data!)
                                                 .then((value) => setState(() {
@@ -152,6 +207,7 @@ class _TicketPageState extends State<TicketPage> {
                                         ),
                                       ],
                                     ),
+
                                     Text(DateFormat('hh:mm dd-MM-yyyy').format(
                                         DateTime.parse(
                                             snapshot.data!['created_at']))),
@@ -199,9 +255,6 @@ class _TicketPageState extends State<TicketPage> {
                                       // Initial Value
                                       value: currentRating,
 
-                                      // Down Arrow Icon
-                                      icon:
-                                          const Icon(Icons.keyboard_arrow_down),
 
                                       // Array list of items
                                       items: ratings.map((String items) {
@@ -246,83 +299,98 @@ class _TicketPageState extends State<TicketPage> {
                                               'Ecrivez votre commentaire'),
                                       controller: myTitle,
                                     ),
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          Row(
+                                    Form(
+                                        child: Column(
+                                      children: [
+                                        TextFormField(
+                                          decoration: const InputDecoration(
+                                              hintText:
+                                                  'Ecrivez votre commentaire'),
+                                          controller: myTitle,
+                                        ),
+                                        Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Ink(
-                                                  decoration:
-                                                      const ShapeDecoration(
-                                                    color: Color(0xFF094074),
-                                                    shape: CircleBorder(),
-                                                  ),
-                                                  child: IconButton(
-                                                      icon: const Icon(
-                                                        Icons.attach_file,
-                                                        color: Colors.white,
+                                              Row(
+                                                children: [
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.all(
+                                                            10),
+                                                    child: Ink(
+                                                      decoration:
+                                                          const ShapeDecoration(
+                                                        color:
+                                                            Color(0xFF094074),
+                                                        shape: CircleBorder(),
                                                       ),
-                                                      onPressed: () =>
-                                                          _getImage()),
-                                                ),
+                                                      child: IconButton(
+                                                          icon: const Icon(
+                                                            Icons.attach_file,
+                                                            color: Colors.white,
+                                                          ),
+                                                          onPressed: () =>
+                                                              _getImage()),
+                                                    ),
+                                                  ),
+                                                  _pickedFile == null
+                                                      ? const Text(
+                                                          'Aucun fichier sélectionné')
+                                                      : const Text(
+                                                          'Fichier sélectionné.'),
+                                                ],
                                               ),
-                                              _pickedFile == null
-                                                  ? const Text(
-                                                      'Aucun fichier sélectionné')
-                                                  : const Text(
-                                                      'Fichier sélectionné.'),
-                                            ],
-                                          ),
-                                          ElevatedButton(
-                                            style: ButtonStyle(
-                                              backgroundColor:
-                                                  MaterialStateProperty.all(
-                                                      const Color(0xFF094074)),
-                                            ),
-                                            onPressed: () {
-                                              // Validate will return true if the form is valid, or false if
-                                              // the form is invalid.
+                                              ElevatedButton(
+                                                style: ButtonStyle(
+                                                  backgroundColor:
+                                                      MaterialStateProperty.all(
+                                                          const Color(
+                                                              0xFF094074)),
+                                                ),
+                                                onPressed: () {
+                                                  // Validate will return true if the form is valid, or false if
+                                                  // the form is invalid.
 
-                                              if (myTitle.text != '') {
-                                                // If the form is valid, we want to show a Snackbar
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                        const SnackBar(
-                                                  content: Text(
-                                                      'Commentaire ajouté avec succès'),
-                                                  duration:
-                                                      Duration(seconds: 1),
-                                                ));
-                                                // Add the comment to the ticket
-                                                createTicketContent(
-                                                        args['id'] ?? '',
-                                                        myTitle.text)
-                                                    .then(((value) =>
-                                                        setState(() {
-                                                          ticketContents =
-                                                              getTicketContents(
-                                                                  args['id'] ??
-                                                                      "");
-                                                        })));
+                                                  if (myTitle.text != '') {
+                                                    // If the form is valid, we want to show a Snackbar
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                            const SnackBar(
+                                                      content: Text(
+                                                          'Commentaire ajouté avec succès'),
+                                                      duration:
+                                                          Duration(seconds: 1),
+                                                    ));
+                                                    // Add the comment to the ticket
+                                                    createTicketContent(
+                                                            args['id'] ?? '',
+                                                            myTitle.text)
+                                                        .then(((value) =>
+                                                            setState(() {
+                                                              ticketContents =
+                                                                  getTicketContents(
+                                                                      args['id'] ??
+                                                                          "");
+                                                            })));
 
-                                                // Clear the text field
-                                                myTitle.clear();
+                                                    // Clear the text field
+                                                    myTitle.clear();
 
-                                                // Refresh the ticket contents
+                                                    // Refresh the ticket contents
 
-                                              }
-                                            },
-                                            child: const Text('Submit'),
-                                          ),
-                                        ])
+                                                  }
+                                                },
+                                                child: const Text('Submit'),
+                                              ),
+                                            ])
+                                      ],
+                                    ))
                                   ],
-                                ))
-                              ],
-                            ),
+                                ),
+                              ),
+                            ],
                           );
                         } else {
                           return const Center(
