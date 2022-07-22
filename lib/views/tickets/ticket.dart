@@ -104,7 +104,7 @@ class _TicketPageState extends State<TicketPage> {
                               status[snapshot.data!['status_id'] - 1];
                           String? currentRating = "";
 
-                          snapshot.data!['rating'] == null
+                          snapshot.data!['rating'].toString() == "0"
                               ? currentRating = 'N/A'
                               : currentRating =
                                   snapshot.data!['rating'].toString();
@@ -160,10 +160,12 @@ class _TicketPageState extends State<TicketPage> {
                                                 snapshot.data!['priority'] =
                                                     int.parse(newValue!);
                                                 updateTicket(args['id'] ?? '',
-                                                    snapshot.data!);
-                                                setState(() {
-                                                  currentPriority = newValue;
-                                                });
+                                                        snapshot.data!)
+                                                    .then((value) => setState(
+                                                        () => {
+                                                              currentPriority =
+                                                                  newValue
+                                                            }));
                                               },
                                             ),
                                           ],
@@ -196,108 +198,56 @@ class _TicketPageState extends State<TicketPage> {
                                           onChanged: (String? newValue) {
                                             snapshot.data!['status_id'] =
                                                 status.indexOf(newValue!) + 1;
-                                            print(snapshot.data!['status_id']);
                                             updateTicket(args['id'] ?? '',
                                                     snapshot.data!)
                                                 .then((value) => setState(() {
-                                                      currentPriority =
-                                                          newValue;
+                                                      currentStatus = status[
+                                                          snapshot.data![
+                                                                  'status_id'] -
+                                                              1];
                                                     }));
                                           },
                                         ),
                                       ],
                                     ),
+                                    Row(
+                                      children: [
+                                        const Text('rating'),
+                                        DropdownButton(
+                                          // Initial Value
+                                          value: currentRating,
 
-                                    Text(DateFormat('hh:mm dd-MM-yyyy').format(
-                                        DateTime.parse(
-                                            snapshot.data!['created_at']))),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Text('status'),
-                                    DropdownButton(
-                                      // Initial Value
-                                      value: currentStatus,
+                                          // Down Arrow Icon
+                                          icon: const Icon(
+                                              Icons.keyboard_arrow_down),
 
-                                      // Down Arrow Icon
-                                      icon:
-                                          const Icon(Icons.keyboard_arrow_down),
+                                          // Array list of items
+                                          items: ratings.map((String items) {
+                                            return DropdownMenuItem(
+                                              value: items,
+                                              child: Text(items),
+                                            );
+                                          }).toList(),
+                                          // After selecting the desired option,it will
+                                          // change button value to selected value
+                                          onChanged: (String? newValue) {
+                                            if (newValue == 'N/A') {
+                                              snapshot.data!['rating'] = null;
+                                            } else {
+                                              snapshot.data!['rating'] =
+                                                  ratings.indexOf(newValue!);
+                                            }
 
-                                      // Array list of items
-                                      items: status.map((String items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items),
-                                        );
-                                      }).toList(),
-                                      // After selecting the desired option,it will
-                                      // change button value to selected value
-                                      onChanged: (String? newValue) {
-                                        snapshot.data!['status_id'] =
-                                            status.indexOf(newValue!) + 1;
-                                        updateTicket(args['id'] ?? '',
-                                                snapshot.data!)
-                                            .then((value) => setState(() {
-                                                  currentStatus = status[
-                                                      snapshot.data![
-                                                              'status_id'] -
-                                                          1];
+                                            // Update the ticket rating
+                                            updateTicket(
+                                              args['id']!,
+                                              snapshot.data!,
+                                            ).then((value) => setState(() {
+                                                  currentRating = newValue;
                                                 }));
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    const Text('rating'),
-                                    DropdownButton(
-                                      // Initial Value
-                                      value: currentRating,
-
-
-                                      // Array list of items
-                                      items: ratings.map((String items) {
-                                        return DropdownMenuItem(
-                                          value: items,
-                                          child: Text(items),
-                                        );
-                                      }).toList(),
-                                      // After selecting the desired option,it will
-                                      // change button value to selected value
-                                      onChanged: (String? newValue) {
-                                        newValue == "N/A"
-                                            ? snapshot.data!['rating'] = "0"
-                                            : snapshot.data!['rating'] =
-                                                newValue;
-
-                                        // Update the ticket rating
-                                        updateTicket(
-                                          args['id']!,
-                                          snapshot.data!,
-                                        ).then((value) => setState(
-                                              () {
-                                                setState(() {
-                                                  newValue == "N/A"
-                                                      ? currentRating = "N/A"
-                                                      : currentRating =
-                                                          newValue;
-                                                });
-                                              },
-                                            ));
-                                        // Refresh the ticket
-                                      },
-                                    ),
-                                  ],
-                                ),
-                                Form(
-                                    child: Column(
-                                  children: [
-                                    TextFormField(
-                                      decoration: const InputDecoration(
-                                          hintText:
-                                              'Ecrivez votre commentaire'),
-                                      controller: myTitle,
+                                          },
+                                        ),
+                                      ],
                                     ),
                                     Form(
                                         child: Column(
