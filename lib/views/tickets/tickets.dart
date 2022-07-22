@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../controllers/create_ticket.dart';
 import '../../controllers/get_all_tickets.dart';
 
 class TicketList extends StatefulWidget {
@@ -42,6 +43,12 @@ class _TicketListState extends State<TicketList> {
         centerTitle: true,
         backgroundColor: const Color(0xFF094074),
         elevation: 0,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          createTicketDialog(context);
+        },
+        child: const Icon(Icons.add),
       ),
       //list view all tickets
       body: RefreshIndicator(
@@ -101,5 +108,97 @@ class _TicketListState extends State<TicketList> {
         ),
       ),
     );
+  }
+
+  createTicketDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          String? currentPriority = '1';
+          final myTitle = TextEditingController();
+          return AlertDialog(
+            title: const Text('Create Ticket'),
+            content: SizedBox(
+              height: 200,
+              width: 300,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TextField(
+                    controller: myTitle,
+                    decoration: const InputDecoration(
+                      labelText: 'Title',
+                    ),
+                  ),
+                  StatefulBuilder(
+                    builder: (BuildContext context, StateSetter dropDownState) {
+                      return DropdownButton<String>(
+                        value: currentPriority,
+                        items: <String>['1', '2', '3'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(
+                              value,
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String? value) {
+                          currentPriority = value;
+                          dropDownState((() => {}));
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                child: const Text('Cancel'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              TextButton(
+                child: const Text('Create'),
+                onPressed: () {
+                  //create ticket
+
+                  if (myTitle.text != '') {
+                    var response = createTicket(myTitle.text, currentPriority!);
+                    response.then((value) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(
+                        context,
+                        '/ticket',
+                        arguments: {'id': value['id'].toString()},
+                      );
+                    });
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Error'),
+                          content: const Text('Please fill all fields'),
+                          actions: <Widget>[
+                            TextButton(
+                              child: const Text('Ok'),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
+                },
+              ),
+            ],
+          );
+        });
   }
 }
