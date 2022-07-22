@@ -291,6 +291,21 @@ class _TicketPageState extends State<TicketPage> {
                                                           'Fichier sélectionné.'),
                                                 ],
                                               ),
+                                              _pickedFile != null
+                                                  ? ElevatedButton(
+                                                      onPressed: () {
+                                                        if (_pickedFile !=
+                                                            null) {
+                                                          setState(() {
+                                                            _pickedFile = null;
+                                                            _image = null;
+                                                          });
+                                                        }
+                                                      },
+                                                      child: const Icon(
+                                                        Icons.delete,
+                                                      ))
+                                                  : const SizedBox(),
                                               ElevatedButton(
                                                 style: ButtonStyle(
                                                   backgroundColor:
@@ -317,8 +332,10 @@ class _TicketPageState extends State<TicketPage> {
                                                     createTicketContent(
                                                             args['id'] ?? '',
                                                             myTitle.text,
-                                                            _image!
-                                                                .readAsBytesSync())
+                                                            _image != null
+                                                                ? _image!
+                                                                    .readAsBytesSync()
+                                                                : null)
                                                         .then(((value) =>
                                                             setState(() {
                                                               ticketContents =

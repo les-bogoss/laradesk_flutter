@@ -231,10 +231,10 @@ class _RegisterPageState extends State<RegisterPage> {
                                           });
                                     } else {
                                       Preferences.setLoggedIn(
-                                          context, true, response[1]);
+                                          context, false, "");
 
                                       Navigator.of(context)
-                                          .pushNamedAndRemoveUntil('/tickets',
+                                          .pushNamedAndRemoveUntil('/login',
                                               (Route<dynamic> route) => false);
                                     }
                                   } else {
