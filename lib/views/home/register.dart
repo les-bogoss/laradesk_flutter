@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:laradesk_flutter/controllers/register_api.dart';
 
-import '../../models/preferences.dart';
-
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -230,9 +228,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                             );
                                           });
                                     } else {
-                                      Preferences.setLoggedIn(
-                                          context, false, "");
-
                                       Navigator.of(context)
                                           .pushNamedAndRemoveUntil('/login',
                                               (Route<dynamic> route) => false);
