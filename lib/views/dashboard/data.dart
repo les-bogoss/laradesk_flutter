@@ -172,7 +172,7 @@ class _DataPageState extends State<DataPage> {
     return Scaffold(
         appBar: AppBar(
           title: Text(
-            'Dashboard',
+            'Data | Dashboard',
             style: GoogleFonts.poppins(
               fontSize: 20,
               fontWeight: FontWeight.w600,
@@ -193,10 +193,10 @@ class _DataPageState extends State<DataPage> {
                     DonutPieChart(snapshot.data![1], animate: true),
                   ),
                   ChartCard(
-                    CustomAxisTickFormatters(snapshot.data![2], animate: false),
+                    CustomAxisTickFormatters(snapshot.data![2], animate: true),
                   ),
                   ChartCard(
-                    VerticalBarLabelChart(snapshot.data![3], animate: false),
+                    VerticalBarLabelChart(snapshot.data![3], animate: true),
                   ),
                 ];
                 return ListView(

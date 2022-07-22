@@ -5,6 +5,9 @@ import 'views/home/login.dart';
 import 'views/home/register.dart';
 import 'views/tickets/ticket.dart';
 import 'views/dashboard/data.dart';
+import 'views/dashboard/dashboard.dart';
+import 'views/dashboard/users/users.dart';
+import 'views/dashboard/users/user.dart';
 
 var appRoutes = {
   '/home': (context) => const NavBar(
@@ -15,5 +18,9 @@ var appRoutes = {
   '/register': (context) => const RegisterPage(),
   '/tickets': (context) => const TicketList(),
   '/ticket': (context) => const TicketPage(),
-  '/dashboard': (context) => const DataPage(),
+  '/users': (context) => const UsersList(),
+  '/user': (context) => const UserPage(),
+  '/dashboard': (context) => const NavBarDash(
+        selectedIndex: 0,
+      ),
 };
