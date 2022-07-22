@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 import '../../controllers/create_ticket.dart';
 import '../../controllers/get_all_tickets.dart';
@@ -78,8 +79,9 @@ class _TicketListState extends State<TicketList> {
                     },
                     child: ListTile(
                       title: Text(snapshot.data[index]['title']),
-                      subtitle:
-                          Text(snapshot.data[index]['updated_at'].toString()),
+                      subtitle: Text(DateFormat('hh:mm dd-MM-yyyy').format(
+                          DateTime.parse(
+                              snapshot.data[index]['updated_at'].toString()))),
                       leading: CircleAvatar(
                         backgroundColor: Colors.blue,
                         backgroundImage: NetworkImage(

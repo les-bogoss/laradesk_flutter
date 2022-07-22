@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../controllers/login_api.dart';
 import '../../models/preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
             children: <Widget>[
               SizedBox(
                 width: 350,
-                height: 420,
+                height: 450,
                 child: Card(
                     elevation: 10,
                     shape: RoundedRectangleBorder(
@@ -191,28 +192,61 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            child: Column(
                               children: [
-                                Text(
-                                  "Don't have an account? ",
-                                  style: GoogleFonts.montserrat(
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                InkWell(
-                                  onTap: () {
-                                    Navigator.of(context)
-                                        .pushNamedAndRemoveUntil('/register',
-                                            (Route<dynamic> route) => false);
-                                  },
-                                  child: Text(
-                                    "Sign up",
-                                    style: GoogleFonts.montserrat(
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Don't have an account? ",
+                                      style: GoogleFonts.montserrat(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w800,
-                                        color: const Color(0xFFFFDD4A)),
-                                    textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.of(context)
+                                            .pushNamedAndRemoveUntil(
+                                                '/register',
+                                                (Route<dynamic> route) =>
+                                                    false);
+                                      },
+                                      child: Text(
+                                        "Sign up",
+                                        style: GoogleFonts.montserrat(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w800,
+                                            color: const Color(0xFFFFDD4A)),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        "Forgot password? ",
+                                        style: GoogleFonts.montserrat(
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      InkWell(
+                                        onTap: () {
+                                          _launchURL();
+                                        },
+                                        child: Text(
+                                          "Reset password",
+                                          style: GoogleFonts.montserrat(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.w800,
+                                              color: const Color(0xFFFFDD4A)),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -227,5 +261,14 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+}
+
+_launchURL() async {
+  const url = 'https://34.140.17.43/forgot-password';
+  if (await canLaunchUrl(Uri.parse(url))) {
+    await launch(url);
+  } else {
+    throw 'Could not launch $url';
   }
 }
