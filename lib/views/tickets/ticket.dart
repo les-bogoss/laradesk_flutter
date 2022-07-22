@@ -161,11 +161,22 @@ class _TicketPageState extends State<TicketPage> {
                                                     int.parse(newValue!);
                                                 updateTicket(args['id'] ?? '',
                                                         snapshot.data!)
-                                                    .then((value) => setState(
-                                                        () => {
-                                                              currentPriority =
-                                                                  newValue
-                                                            }));
+                                                    .then(
+                                                        (value) =>
+                                                            setState(() => {
+                                                                  currentPriority =
+                                                                      newValue,
+                                                                  ScaffoldMessenger.of(
+                                                                          context)
+                                                                      .showSnackBar(
+                                                                          const SnackBar(
+                                                                    content: Text(
+                                                                        'Priority ajouté avec succès'),
+                                                                    duration: Duration(
+                                                                        seconds:
+                                                                            1),
+                                                                  ))
+                                                                }));
                                               },
                                             ),
                                           ],
@@ -205,6 +216,15 @@ class _TicketPageState extends State<TicketPage> {
                                                           snapshot.data![
                                                                   'status_id'] -
                                                               1];
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                              const SnackBar(
+                                                        content: Text(
+                                                            'Status mis a jour avec succès'),
+                                                        duration: Duration(
+                                                            seconds: 1),
+                                                      ));
                                                     }));
                                           },
                                         ),
@@ -244,6 +264,14 @@ class _TicketPageState extends State<TicketPage> {
                                               snapshot.data!,
                                             ).then((value) => setState(() {
                                                   currentRating = newValue;
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                          const SnackBar(
+                                                    content: Text(
+                                                        'Rating updated successfully'),
+                                                    duration:
+                                                        Duration(seconds: 1),
+                                                  ));
                                                 }));
                                           },
                                         ),
